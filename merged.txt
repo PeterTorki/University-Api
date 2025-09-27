@@ -1,0 +1,934 @@
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\app.js" 
+import { config } from "dotenv";
+config({ path: "./src/utils/.env" });
+import express, { json, urlencoded } from "express";
+const app = express();
+import { connectDB } from "./Database/dbConnection.js";
+import userRouter from "./src/modules/user/user.routes.js";
+import departmentRouter from "./src/modules/department/department.routes.js";
+import courseRouter from "./src/modules/course/course.routes.js";
+import { authRouter } from "./src/modules/auth/auth.routes.js";
+connectDB();
+const port = process.env.PORT || 5000;
+
+app.use(json());
+app.use(urlencoded({ extended: true }));
+
+app.use("/users", userRouter);
+app.use("/departments", departmentRouter);
+app.use("/courses", courseRouter);
+app.use("/auth", authRouter);
+
+app.use((req, res) => {
+  res.send("Page Not Found");
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\merged.txt" 
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\app.js" 
+import { config } from "dotenv";
+config({ path: "./src/utils/.env" });
+import express, { json, urlencoded } from "express";
+const app = express();
+import { connectDB } from "./Database/dbConnection.js";
+import userRouter from "./src/modules/user/user.routes.js";
+import departmentRouter from "./src/modules/department/department.routes.js";
+import courseRouter from "./src/modules/course/course.routes.js";
+import { authRouter } from "./src/modules/auth/auth.routes.js";
+connectDB();
+const port = process.env.PORT || 5000;
+
+app.use(json());
+app.use(urlencoded({ extended: true }));
+
+app.use("/users", userRouter);
+app.use("/departments", departmentRouter);
+app.use("/courses", courseRouter);
+app.use("/auth", authRouter);
+
+app.use((req, res) => {
+  res.send("Page Not Found");
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\merged.txt" 
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\app.js" 
+import { config } from "dotenv";
+config({ path: "./src/utils/.env" });
+import express, { json, urlencoded } from "express";
+const app = express();
+import { connectDB } from "./Database/dbConnection.js";
+import userRouter from "./src/modules/user/user.routes.js";
+import departmentRouter from "./src/modules/department/department.routes.js";
+import courseRouter from "./src/modules/course/course.routes.js";
+import { authRouter } fro
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\package.json" 
+{
+  "name": "assignment",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.18.1",
+    "nodemailer": "^7.0.6",
+    "redis": "^5.8.2"
+  }
+}
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\Database\dbConnection.js" 
+import mongoose from "mongoose";
+
+export const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB Connected");
+  } catch (err) {
+    console.error("❌ MongoDB Connection Error:", err.message);
+    process.exit(1);
+  }
+};
+
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\Database\redis.js" 
+import { createClient } from "redis";
+
+const redisClient = createClient();
+redisClient.on("error", (err) => console.error("❌ Redis Error:", err));
+await redisClient.connect();
+
+export const getOrSetCache = async (key, cb) => {
+  try {
+    const cached = await redisClient.get(key);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const freshData = await cb();
+    await redisClient.set(key, JSON.stringify(freshData), {
+      EX: 60 * 60,
+    });
+    return freshData;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+export { redisClient };
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\Database\models\courses\course.model.js" 
+import { Schema, model } from "mongoose";
+
+const CourseSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: String,
+    department: {
+      type: Schema.Types.ObjectId,
+      ref: "Department",
+      required: true,
+    },
+    students: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  },
+  { timestamps: true }
+);
+
+const Course = model("Course", CourseSchema);
+
+export default Course;
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\Database\models\department\department.model.js" 
+import { Schema, model } from "mongoose";
+
+const DepartmentSchema = new Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    description: String,
+  },
+  { timestamps: true }
+);
+const Department = model("Department", DepartmentSchema);
+
+export default Department;
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\Database\models\user\user.model.js" 
+import { Schema, model } from "mongoose";
+
+const UserSchema = new Schema(
+  {
+    name: { type: String },
+    email: { type: String, required: true },
+    role: {
+      type: String,
+      enum: ["student", "admin"],
+      default: "student",
+    },
+    password: { type: String },
+    isConfirmed: { type: Boolean, default: false },
+    department: { type: Schema.Types.ObjectId, ref: "Department" },
+    enrolledCourses: [{ type: Schema.Types.ObjectId, ref: "Course" }],
+  },
+  { timestamps: true }
+);
+
+const User = model("User", UserSchema);
+export default User;
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\middleware\auth.middleware.js" 
+import User from '../../Database/models/user/user.model.js';
+import jwt from "jsonwebtoken"
+
+export const auth = () => {
+    return async (req, res, next) => {
+        try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) return res.status(400).json({ message: "Please signin first" });
+            if (!authHeader.startsWith("Bearer ")) return res.status(400).json({ message: "Invalid Token" });
+            const originalToken = authHeader.split(" ")[1];
+            const decodedToken = jwt.verify(originalToken, "UserToken")
+            if (!decodedToken.id) return res.status(400).json({ message: "Invalid Token payload" })
+            const user = await User.findById(decodedToken.id);
+            if (!user) return res.status(400).json({ message: "Please signup and try again" })
+            req.authUser = user
+            next()
+        } catch (error) {
+            res.status(500).json({ Error: error })
+        }
+    }
+}
+
+async function checkUserToken() {
+}
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\middleware\checkEmail.middleware.js" 
+import User from "../../Database/models/user/user.model.js";
+
+
+export const checkEmail = () => {
+    return async (req, res, next) => {
+        const { email } = req.body;
+        const user = await User.find({ email }).select("-password")
+        if (user.length > 0) return res.status(200).json({ message: "Email already exist" })
+        next()
+    }
+}
+export const loginEmail = () => {
+    return async (req, res, next) => {
+        const { email } = req.body;
+        const user = await User.find({ email })
+        if (user.length === 0) return res.status(200).json({ message: "User Not found" })
+        req.user = user[0];
+        next()
+    }
+}
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\middleware\checkRole.middleware.js" 
+
+
+export const checkRole = () => {
+    return (req, res, next) => {
+        const { role } = req.authUser;
+        if (role !== "admin") return res.status(403).json({ message: "You are unAuthorized" })
+        next()
+    }
+}
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\middleware\checkVerification.js" 
+
+
+
+export const checkVerification = () => {
+    return (req, res, next) => {
+        const { isConfirmed } = req.user;
+        if (isConfirmed == false) return res.status(403).json({ message: "Verify your email first" })
+        next()
+    }
+}
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\middleware\hashPass.middleware.js" 
+import bcrypt from 'bcrypt';
+
+
+export const hashPassword = () => {
+    return async (req, res, next) => {
+        const { password } = req.body
+        if (!password) next()
+        const hashedPass = await bcrypt.hash(password, 10);
+        req.body.password = hashedPass;
+        next()
+    }
+}
+
+export const comparePassword = () => {
+    return async (req, res, next) => {
+        try {
+            const { password } = req.body;
+            const isMatch = await bcrypt.compare(password, req.user.password);
+            if (!isMatch) {
+                return res.status(401).json({ message: "Wrong email or password" });
+            }
+            next()
+        } catch (error) {
+            res.status(500).json({ Error: error.message })
+        }
+    }
+}
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\middleware\validations.middleware.js" 
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
+import { createUserSchema, updateUserSchema } from '../modules/user/user.validation.js';
+import { createCourseSchema, updateCourseSchema } from '../modules/course/course.validation.js';
+import { createDepartmentSchema, updateDepartmentSchema } from '../modules/department/department.validation.js';
+import { loginValidation, signUpValidation } from "../modules/auth/auth.validation.js";
+
+
+const ajv = new Ajv({ allErrors: true, removeAdditional: true });
+addFormats(ajv);
+
+
+const validators = {
+  user: ajv.compile(createUserSchema),
+  updateUser: ajv.compile(updateUserSchema),
+  course: ajv.compile(createCourseSchema),
+  updateCourse: ajv.compile(updateCourseSchema),
+  department: ajv.compile(createDepartmentSchema),
+  updateDepartment: ajv.compile(updateDepartmentSchema),
+  signup: ajv.compile(signUpValidation),
+  login: ajv.compile(loginValidation),
+};
+
+export const validate =
+  (schemaName) => {
+    return (req, res, next) => {
+      const validateFn = validators[schemaName];
+      if (!validateFn) {
+        return res.status(500).json({ error: `Schema '${schemaName}' not found` });
+      }
+
+      const valid = validateFn(req.body);
+
+      if (!valid) {
+        return res.status(400).json({
+          error: "Validation failed",
+          details: validateFn.errors,
+        });
+      }
+
+      next();
+    };
+  }
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\auth\auth.controller.js" 
+import User from './../../../Database/models/user/user.model.js';
+import jwt from "jsonwebtoken"
+import { redisClient } from "../../../Database/redis.js"
+import { verifyEmail } from '../../services/emailVerification.js';
+import { clearUserCache } from '../../utils/clearCache.js';
+
+export const signin = async (req, res) => {
+    try {
+        const token = jwt.sign({ id: req.user._id, role: req.user.role }, "UserToken")
+        const userObj = req.user.toObject();
+        delete userObj.password;
+        clearUserCache()
+        res.status(200).json({ message: "User logged", User: userObj, token: token })
+    } catch (error) {
+        res.status(500).json({ Error: error.message })
+    }
+}
+
+
+
+export const signup = async (req, res) => {
+    try {
+        const newUser = new User(req.body);
+        verifyEmail(newUser, req)
+        clearUserCache()
+        await newUser.save();
+        res.status(201).json({ message: "user created successfully", user: newUser })
+    } catch (error) {
+        res.status(500).json({ Error: error.message })
+    }
+}
+
+export const verificationEmail = async (req, res) => {
+    try {
+        const { token } = req.params
+        const data = jwt.verify(token, "verifyEmail")
+        clearUserCache()
+        const user = await User.findByIdAndUpdate({ _id: data._id, isConfirmed: false }, { isConfirmed: true }, { new: true })
+        if (!user) res.status(404).json({ message: "User not found" })
+        res.status(200).json({ message: "User verification successfully " })
+    } catch (error) {
+        res.status(500).json({ Error: error.message })
+    }
+}
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\auth\auth.routes.js" 
+import express from 'express';
+import { signin, signup, verificationEmail } from './auth.controller.js';
+import { validate } from '../../middleware/validations.middleware.js';
+import { comparePassword, hashPassword } from '../../middleware/hashPass.middleware.js';
+import { checkEmail, loginEmail } from '../../middleware/checkEmail.middleware.js';
+import { checkVerification } from '../../middleware/checkVerification.js';
+
+export const authRouter = express.Router()
+
+authRouter.get("/verify/:token", verificationEmail);
+authRouter.post("/signup", validate("signup"), hashPassword(), checkEmail(), validate("user"), signup);
+authRouter.post("/login", loginEmail(), comparePassword(), checkVerification(), validate("login"), signin);
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\auth\auth.validation.js" 
+export const signUpValidation = {
+    type: "object",
+    properties: {
+        name: { type: "string" },
+        email: { type: "string", format: "email" },
+        role: {
+            type: "string",
+            enum: ["student", "admin"]
+        },
+        password: { type: "string" },
+        department: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$"
+        },
+        enrolledCourses: {
+            type: "array",
+            items: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+        }
+    },
+    required: ["name", "email", "password"],
+    additionalProperties: false,
+};
+export const loginValidation = {
+    type: "object",
+    properties: {
+        email: { type: "string", format: "email" },
+        password: { type: "string" },
+    },
+    required: ["email", "password"],
+    additionalProperties: false,
+};
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\course\course.controller.js" 
+import Course from "../../../Database/models/courses/course.model.js";
+import { clearUserCache } from "../../utils/clearCache.js";
+import { getOrSetCache } from './../../../Database/redis.js';
+
+export const getAllCourse = async (req, res) => {
+  try {
+    const courses = await getOrSetCache('/courses', async () => {
+      return await Course.find().populate("department");
+    })
+    res.status(200).json({ AllCourses: courses });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch Courses",
+      details: error.message
+    });
+  }
+};
+export const getSpecificCourse = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const course = await getOrSetCache('/courses', async () => {
+      return await Course.findById(id).populate("department");
+    })
+    if (!course) {
+      return res.status(404).json({ message: "course not found" });
+    }
+    res.status(200).json({ course });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch Courses",
+      details: error.message
+    });
+  }
+};
+
+export const addCourse = async (req, res) => {
+  try {
+    const courses = new Course({ ...req.body });
+    clearUserCache(`courses`)
+    await courses.save();
+    res.status(201).json({
+      message: "course Created Successfully",
+      course: courses,
+    });
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+};
+
+export const deleteCourse = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const course = await Course.findByIdAndDelete(id);
+    if (!course) {
+      return res.status(404).json({ message: "course not found" });
+    }
+    clearUserCache(`courses`, id)
+    res.status(200).json({
+      message: "course deleted successfully",
+      courseDeleted: course,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+export const updateCourse = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const course = await Course.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    }).populate("department");
+    if (!course) {
+      return res.status(404).json({ message: "course not found" });
+    }
+    clearUserCache(`courses`, id)
+    res.status(200).json({
+      message: "course updated successfully",
+      courseUpdated: course,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\course\course.routes.js" 
+import express from "express";
+import {
+  addCourse,
+  deleteCourse,
+  getAllCourse,
+  getSpecificCourse,
+  updateCourse,
+} from "./course.controller.js";
+import { validate } from "../../middleware/validations.middleware.js";
+import { checkRole } from "../../middleware/checkRole.middleware.js";
+import { auth } from "../../middleware/auth.middleware.js";
+
+const courseRouter = express.Router();
+courseRouter.get("/", auth(), checkRole(), getAllCourse);
+courseRouter.get("/:id", auth(), checkRole(), getSpecificCourse);
+courseRouter.post("/", auth(), checkRole(), validate("course"), addCourse);
+courseRouter.delete("/:id", auth(), checkRole(), deleteCourse);
+courseRouter.put("/:id", auth(), checkRole(), validate("updateCourse"), updateCourse);
+
+export default courseRouter;
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\course\course.validation.js" 
+export const createCourseSchema = {
+  type: "object",
+  properties: {
+    title: { type: "string" },
+    description: { type: "string" },
+    department: {
+      type: "string",
+      pattern: "^[a-fA-F0-9]{24}$"
+    },
+    students: {
+      type: "array",
+      items: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+    }
+  },
+  required: ["title", "department"], 
+  additionalProperties: false,
+};
+
+export const updateCourseSchema = {
+  type: "object",
+  properties: {
+    title: { type: "string" },
+    description: { type: "string" },
+    department: {
+      type: "string",
+      pattern: "^[a-fA-F0-9]{24}$"
+    },
+    students: {
+      type: "array",
+      items: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+    }
+  },
+  additionalProperties: false,
+};
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\department\department.controller.js" 
+import Department from "../../../Database/models/department/department.model.js";
+import { getOrSetCache } from "../../../Database/redis.js";
+import { clearUserCache } from "../../utils/clearCache.js";
+
+export const getAllDepartment = async (req, res) => {
+  try {
+    const departments = await getOrSetCache('/departments', async () => {
+      return await Department.find();
+    })
+    res.status(200).json({ AllDepartments: departments });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch Departments",
+      details: error.message
+    });
+  }
+};
+
+export const getSpecificDepartment = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const department = await getOrSetCache(`/departments/${id}`, async () => {
+      return await Department.findById(id);
+    })
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+    res.status(200).json({ department });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch This department",
+      details: error.message
+    });
+  }
+};
+
+export const addDepartment = async (req, res) => {
+  const data = req.body;
+  try {
+    const allDepartments = await Department.find();
+    const existName = allDepartments.find((department) => {
+      return department.name == data.name;
+    });
+    if (existName) {
+      return res.status(208).json({ message: "Name already exist" });
+    }
+    const departments = new Department({ ...data });
+    clearUserCache(`departments`)
+    await departments.save();
+    res.status(201).json({
+      message: "department Created Successfully",
+      department: departments,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const deleteDepartment = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const department = await Department.findByIdAndDelete(id);
+    if (!department) {
+      return res.status(404).json({ message: "department not found" });
+    }
+    clearUserCache(`departments`, id)
+    res.status(200).json({
+      message: "department deleted successfully",
+      departmentDeleted: department,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+export const updateDepartment = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const department = await Department.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!department) {
+      return res.status(404).json({ message: "department not found" });
+    }
+    clearUserCache(`departments`, id)
+    res.status(200).json({
+      message: "department updated successfully",
+      departmentUpdated: department,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\department\department.routes.js" 
+import express from "express";
+import { auth } from './../../middleware/auth.middleware.js';
+import { checkRole } from './../../middleware/checkRole.middleware.js';
+import {
+  addDepartment,
+  deleteDepartment,
+  getAllDepartment,
+  getSpecificDepartment,
+  updateDepartment,
+} from "./department.controller.js";
+import { validate } from "../../middleware/validations.middleware.js";
+
+
+
+
+
+const departmentRouter = express.Router();
+departmentRouter.get("/", auth(), checkRole(), getAllDepartment);
+departmentRouter.get("/:id", auth(), checkRole(), getSpecificDepartment);
+departmentRouter.post("/", auth(), checkRole(), validate("department"), addDepartment);
+departmentRouter.delete("/:id", auth(), checkRole(), deleteDepartment);
+departmentRouter.put("/:id", auth(), checkRole(), updateDepartment);
+
+export default departmentRouter;
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\department\department.validation.js" 
+export const createDepartmentSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    description: { type: "string" },
+  },
+  required: ["name"],
+  additionalProperties: false,
+};
+
+
+export const updateDepartmentSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    description: { type: "string" },
+  },
+  additionalProperties: false,
+};
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\user\user.controller.js" 
+import User from "../../../Database/models/user/user.model.js";
+import { getOrSetCache, redisClient } from "../../../Database/redis.js"
+import { verifyEmail } from "../../services/emailVerification.js";
+import { clearUserCache } from "../../utils/clearCache.js";
+
+
+export const getUser = async (req, res) => {
+  try {
+    const users = await getOrSetCache("/users_all", async () => {
+      return await User.find();
+    })
+    res.status(200).json({ message: users });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch Users",
+      details: error.message
+    });
+  }
+}
+
+
+export const getSpecificUser = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const specificUser = await getOrSetCache(`/user/${id}`, async () => {
+      return await User.findById(id)
+    })
+    if (!specificUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ User: specificUser });
+  } catch (err) {
+    res.status(500).json({ error: "User not found" });
+  }
+};
+export const deleteUser = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    clearUserCache(id)
+    res
+      .status(200)
+      .json({ message: "User deleted successfully", userDeleted: user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+export const updateUser = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const existUser = await User.findById(id);
+    if (!existUser) return res.status(404).json({ message: "User not found" });
+    const existEmail = req.body.email && req.body.email !== existUser.email
+    if (existEmail) {
+      req.body.isConfirmed = false;
+    }
+    const user = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    clearUserCache(id)
+    if (existEmail) {
+      verifyEmail(existUser, req);
+    }
+    res
+      .status(200)
+      .json({ message: existEmail ? "User updated and verification email sent" : "User updated successfully", userUpdated: user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\user\user.routes.js" 
+import express from "express";
+import {
+  deleteUser,
+  getSpecificUser,
+  getUser,
+  updateUser,
+} from "./user.controller.js";
+import { auth } from "../../middleware/auth.middleware.js";
+import { checkRole } from "../../middleware/checkRole.middleware.js";
+import { hashPassword } from "../../middleware/hashPass.middleware.js";
+import { validate } from "../../middleware/validations.middleware.js";
+
+const userRouter = express.Router();
+userRouter.get("/", auth(), checkRole(), getUser);
+userRouter.get("/:id", auth(), checkRole(), getSpecificUser);
+userRouter.delete("/:id", auth(), checkRole(), deleteUser);
+userRouter.put("/:id", auth(), hashPassword(),validate("updateUser"), updateUser);
+
+export default userRouter;
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\modules\user\user.validation.js" 
+export const createUserSchema = {
+    type: "object",
+    properties: {
+        name: { type: "string" },
+        email: { type: "string", format: "email" },
+        role: {
+            type: "string",
+            enum: ["student", "admin"]
+        },
+        password: { type: "string" },
+        department: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$"
+        },
+        enrolledCourses: {
+            type: "array",
+            items: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+        }
+    },
+    required: [ "email", "password"],
+    additionalProperties: false,
+};
+
+
+export const updateUserSchema = {
+    type: "object",
+    properties: {
+        name: { type: "string" },
+        email: { type: "string", format: "email" },
+        role: {
+            type: "string",
+            enum: ["student", "admin"]
+        },
+        password: { type: "string" },
+        department: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$"
+        },
+        enrolledCourses: {
+            type: "array",
+            items: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+        }
+    },
+    additionalProperties: false,
+};
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\services\emailVerification.js" 
+import { SendEmail } from "../utils/sendEmail.js"
+import jwt from 'jsonwebtoken';
+
+export async function verifyEmail(newUser, req) {
+    const { email } = req.body
+    const token = jwt.sign({ _id: newUser._id }, "verifyEmail", {
+        expiresIn: "1h"
+    })
+    const verifyPage = `${req.protocol}://${req.headers.host}/auth/verify/${token}`
+    const isEmailSent = await SendEmail({
+        to: email,
+        subject: "Welcome to course App , Verify Your email address",
+        htmlMessage: `<a href=${verifyPage}>Please Verify your email address</a>`
+    })
+    if (isEmailSent.rejected.length > 0) res.status(500).json({ message: "Verification email failed" })
+}
+
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\services\redisServices.js" 
+
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\utils\.env" 
+PORT=3000
+MONGO_URI=mongodb+srv://BasselMahmoud:zRL9xheDdv0GkQK3@cluster0.luuvmqd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\utils\clearCache.js" 
+import { redisClient } from "../../Database/redis.js"
+
+export async function clearUserCache(cacheName = `users_all`, id = null) {
+    if (id === null) {
+        await redisClient.del(`/${cacheName}`)
+    } else {
+        await Promise.all([
+            redisClient.del(`/${cacheName}`),
+            redisClient.del(`/${cacheName}/${id}`)
+        ]);
+    }
+
+}
+D:\ITI 4-Months\Universe-API>type "D:\ITI 4-Months\Universe-API\src\utils\sendEmail.js" 
+import nodemailer from "nodemailer"
+export const SendEmail = async ({
+    to = "",
+    subject = "",
+    htmlMessage = "",
+    attachment = []
+} = {}) => {
+    const transporter = nodemailer.createTransport({
+        host: "localhost",
+        port: 465,
+        secure: true,
+        auth: {
+            user: "baselmahmoudkamal@gmail.com",
+            pass: "svlggffbbskznikv",
+        },
+        service: "gmail"
+    });
+
+    const info = await transporter.sendMail({
+        from: "No-Reply <baselmahmoudkamal@gmail.com>",
+        to,
+        subject,
+        html: htmlMessage,
+    });
+    return info
+}
