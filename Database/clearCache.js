@@ -1,9 +1,8 @@
-// src/utils/clearCache.js
+// utils/clearCache.js
 import { getRedisClient } from "../../Database/redis.js";
 
 export async function clearUserCache(cacheName = `users_all`, id = null) {
   const client = await getRedisClient();
-
   if (id === null) {
     await client.del(`/${cacheName}`);
   } else {

@@ -1,5 +1,5 @@
 import User from "../../../Database/models/user/user.model.js";
-import { getOrSetCache, redisClient } from "../../../Database/redis.js"
+import { getOrSetCache } from "../../../Database/redis.js"
 import { verifyEmail } from "../../services/emailVerification.js";
 import { clearUserCache } from "../../utils/clearCache.js";
 

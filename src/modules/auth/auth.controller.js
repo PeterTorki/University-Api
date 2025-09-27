@@ -1,6 +1,5 @@
 import User from './../../../Database/models/user/user.model.js';
 import jwt from "jsonwebtoken"
-import { redisClient } from "../../../Database/redis.js"
 import { verifyEmail } from '../../services/emailVerification.js';
 import { clearUserCache } from '../../utils/clearCache.js';
 
