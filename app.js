@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-config({ path: "./src/utils/.env" });
+config();
 import express, { json, urlencoded } from "express";
 const app = express();
 import { connectDB } from "./Database/dbConnection.js";
