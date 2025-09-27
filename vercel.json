@@ -2,14 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/api/**/*.js",
+      "src": "src/**/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/src/api/$1.js"
+      "src": "/(.*)",
+      "dest": "/src/$1.js"
     }
-  ]
+  ],
+  "env": {
+    "PORT": "3000",
+    "MONGO_URI": "@mongo_uri",
+    "REDIS_HOST": "@redis_host",
+    "REDIS_PORT": "@redis_port",
+    "REDIS_PASSWORD": "@redis_password"
+  }
 }
