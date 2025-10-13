@@ -9,7 +9,7 @@ export const connectDB = async () => {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGO_URI).then((mongoose) => {
+    cached.promise = mongoose.connect(process.env.mongo_uri).then((mongoose) => {
       console.log("✅ MongoDB Connected");
       return mongoose;
     });

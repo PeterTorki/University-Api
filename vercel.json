@@ -14,7 +14,7 @@
   ],
   "env": {
     "PORT": "3000",
-    "MONGO_URI": "@mongo_uri",
+    "mongo_uri": "@mongo_uri",
     "REDIS_HOST": "@redis_host",
     "REDIS_PORT": "@redis_port",
     "REDIS_PASSWORD": "@redis_password"

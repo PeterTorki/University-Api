@@ -3,6 +3,7 @@
 A Node.js REST API for university management system with authentication, user management, departments, and courses.
 
 ## Documentations
+
 - [University Api](https://documenter.getpostman.com/view/44599683/2sB3QDwD31)
 
 ## Technologies Used
@@ -21,15 +22,20 @@ A Node.js REST API for university management system with authentication, user ma
 
 1. Clone the repository
 2. Install dependencies:
+
 ```bash
 npm install
 ```
+
 3. Create `.env` file in `src/utils/` directory:
+
 ```env
 PORT=3000
-MONGO_URI=your_mongodb_connection_string
+mongo_uri=your_mongodb_connection_string
 ```
+
 4. Start the server:
+
 ```bash
 npm start
 ```
@@ -37,6 +43,7 @@ npm start
 ## API Routes
 
 ### Authentication Routes
+
 ```
 POST   /auth/signup          - Register new user
 POST   /auth/login           - User login
@@ -44,6 +51,7 @@ GET    /auth/verify/:token   - Email verification
 ```
 
 ### User Routes (Admin Only)
+
 ```
 GET    /users               - Get all users
 GET    /users/:id           - Get specific user
@@ -52,6 +60,7 @@ DELETE /users/:id           - Delete user
 ```
 
 ### Department Routes (Admin Only)
+
 ```
 GET    /departments         - Get all departments
 GET    /departments/:id     - Get specific department
@@ -61,6 +70,7 @@ DELETE /departments/:id     - Delete department
 ```
 
 ### Course Routes (Admin Only)
+
 ```
 GET    /courses             - Get all courses
 GET    /courses/:id         - Get specific course
@@ -72,17 +82,20 @@ DELETE /courses/:id         - Delete course
 ## Authentication
 
 Include JWT token in requests:
+
 ```
 Authorization: Bearer <your-jwt-token>
 ```
 
 ## User Roles
+
 - **student** - Default role
 - **admin** - Full access to all routes
 
 ## Request Examples
 
 ### Sign Up
+
 ```json
 POST /auth/signup
 {
@@ -94,6 +107,7 @@ POST /auth/signup
 ```
 
 ### Create Department
+
 ```json
 POST /departments
 {
@@ -103,6 +117,7 @@ POST /departments
 ```
 
 ### Create Course
+
 ```json
 POST /courses
 {
