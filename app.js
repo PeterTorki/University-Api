@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:4200", // Angular local dev
-      "https://your-frontend.vercel.app", // (optional) your deployed frontend
+      "https://university-api-ten.vercel.app/", // (optional) your deployed frontend
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
