@@ -4,7 +4,7 @@ import { clearUserCache } from "../../utils/clearCache.js";
 
 export const getAllDepartment = async (req, res) => {
   try {
-    const departments = await getOrSetCache('/departments', async () => {
+    const departments = await getOrSetCache('departments', async () => {
       return await Department.find();
     })
     res.status(200).json({ AllDepartments: departments });
@@ -19,7 +19,7 @@ export const getAllDepartment = async (req, res) => {
 export const getSpecificDepartment = async (req, res) => {
   try {
     let { id } = req.params;
-    const department = await getOrSetCache(`/departments/${id}`, async () => {
+    const department = await getOrSetCache(`departments/${id}`, async () => {
       return await Department.findById(id);
     })
     if (!department) {
