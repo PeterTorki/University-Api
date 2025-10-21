@@ -38,7 +38,8 @@ export const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    clearUserCache(id);
+    clearUserCache("users_all");
+    clearUserCache("user", id);
     res.status(200).json({ message: "User deleted successfully", userDeleted: user });
   } catch (err) {
     console.log(err);
